@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Explorer</string>
+    <string name="error_something_went_wrong_try_again">Sorry something went wrong please try again</string>
 </resources>

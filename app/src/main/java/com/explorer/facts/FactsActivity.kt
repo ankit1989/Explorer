@@ -15,11 +15,13 @@ class FactsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_facts)
 
-        var aboutFragment = supportFragmentManager.findFragmentById(R.id.aboutContentFrame)
-        if (aboutFragment == null) {
-            aboutFragment = FactsFragment.newInstance()
+        var factsFragment = supportFragmentManager.findFragmentById(R.id.aboutContentFrame)
+        if (factsFragment == null) {
+            factsFragment = FactsFragment.newInstance()
+            FactsPresenter(factsFragment)
             ActivityUtils.addFragmentToActivity(
-                    supportFragmentManager, aboutFragment, R.id.aboutContentFrame)
+                    supportFragmentManager, factsFragment, R.id.aboutContentFrame)
+
         }
     }
 }
