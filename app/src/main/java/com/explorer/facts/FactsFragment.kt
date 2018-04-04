@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import android.widget.TextView
 import com.explorer.R
 import com.explorer.facts.model.FactResponse
 import com.explorer.facts.model.FactsAdapter
@@ -21,6 +22,7 @@ class FactsFragment : Fragment(), FactsContract.View {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var progressBar: ProgressBar
+    private lateinit var noContentTextView:TextView
     private lateinit var presenter: FactsContract.Presenter
     private lateinit var adapter:FactsAdapter
 
@@ -33,6 +35,7 @@ class FactsFragment : Fragment(), FactsContract.View {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         adapter = FactsAdapter(presenter)
+        retainInstance = true
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -40,12 +43,15 @@ class FactsFragment : Fragment(), FactsContract.View {
 
         val root = inflater.inflate(R.layout.fragment_facts, container, false)
         progressBar = root.findViewById(R.id.progressBar)
+        noContentTextView = root.findViewById(R.id.noContentTextView)
 
         recyclerView = root.findViewById(R.id.recyclerView)
         recyclerView.adapter = adapter
         recyclerView.setHasFixedSize(true)
         val linearLayoutManager = LinearLayoutManager(context)
         recyclerView.layoutManager = linearLayoutManager
+
+        presenter.loadFacts(false)
 
         return root
     }
@@ -56,12 +62,12 @@ class FactsFragment : Fragment(), FactsContract.View {
 
     override fun showFacts(factResponse: FactResponse?) {
         if (factResponse != null) {
-            if (factResponse.facts != null && !factResponse.facts.isEmpty()) {
-                adapter.setFacts(factResponse.facts)
-            } else {
-                //show no facts view
-            }
+            adapter.setFacts(factResponse.facts)
         }
+    }
+
+    override fun showNoFactsView() {
+        noContentTextView.visibility = View.VISIBLE
     }
 
     override fun showGenericNetworkError() {
@@ -82,11 +88,6 @@ class FactsFragment : Fragment(), FactsContract.View {
         if (progressBar.isShown) {
             progressBar.visibility = View.GONE
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        presenter.start()
     }
 
 }

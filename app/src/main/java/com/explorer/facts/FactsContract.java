@@ -16,12 +16,13 @@ public interface FactsContract {
         void showProgress();
         void hideProgress();
         void showFacts(FactResponse factResponse);
+        void showNoFactsView();
         void showGenericNetworkError();
         void showUnableToFetchFactsError();
     }
 
     interface Presenter extends BasePresenter {
-        void getFacts();
+        void loadFacts(boolean forceUpdate);
     }
 
 }

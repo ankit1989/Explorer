@@ -1,5 +1,6 @@
 package com.explorer.facts
 
+import com.explorer.facts.model.Fact
 import com.explorer.facts.model.FactResponse
 import com.explorer.network.ApiUtils
 import retrofit2.Call
@@ -13,32 +14,59 @@ class FactsPresenter (factsView: FactsContract.View) : FactsContract.Presenter {
 
     private var mFactsView = factsView
     private var mAPIService = ApiUtils.getAPIService()
+    private var mFactsResponse:FactResponse? = null
+    private var mFirstLoad = true
 
     init {
         mFactsView.setPresenter(this)
     }
 
     override fun start() {
-        getFacts()
+        loadFacts(false)
     }
 
-    override fun getFacts() {
-        mFactsView.showProgress()
-        mAPIService.facts.enqueue(object : Callback<FactResponse> {
-            override fun onResponse(call: Call<FactResponse>, response: Response<FactResponse>) {
-                mFactsView.hideProgress()
-                if (response.isSuccessful) {
-                    mFactsView.showFacts(response.body())
-                } else {
-                    mFactsView.showUnableToFetchFactsError()
+    override fun loadFacts(forceUpdate: Boolean) {
+        loadFacts(forceUpdate || mFirstLoad, true)
+        mFirstLoad = false
+    }
+
+    private fun loadFacts(forceUpdate: Boolean, showLoadingUI: Boolean) {
+        if (!forceUpdate && mFactsResponse != null) {
+            processFacts(mFactsResponse)
+
+        } else {
+            if (showLoadingUI)
+                mFactsView.showProgress()
+
+            mAPIService.facts.enqueue(object : Callback<FactResponse> {
+                override fun onResponse(call: Call<FactResponse>, response: Response<FactResponse>) {
+                    if (showLoadingUI)
+                        mFactsView.hideProgress()
+
+                    if (response.isSuccessful) {
+                        processFacts(response.body())
+                    } else {
+                        mFactsView.showUnableToFetchFactsError()
+                    }
                 }
-            }
-            override fun onFailure(call: Call<FactResponse>?, t: Throwable?) {
-                mFactsView.hideProgress()
-                mFactsView.showGenericNetworkError()
-            }
-        })
+
+                override fun onFailure(call: Call<FactResponse>?, t: Throwable?) {
+                    if (showLoadingUI)
+                        mFactsView.hideProgress()
+
+                    mFactsView.showGenericNetworkError()
+                }
+            })
+        }
     }
 
+    private fun processFacts(factsResponse: FactResponse?) {
+        if (factsResponse != null) {
+            mFactsResponse = factsResponse
+            mFactsView.showFacts(factsResponse)
+        } else {
+            mFactsView.showNoFactsView()
+        }
+    }
 
 }

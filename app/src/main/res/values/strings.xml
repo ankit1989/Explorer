@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Explorer</string>
     <string name="error_something_went_wrong_try_again">Sorry something went wrong please try again</string>
+    <string name="no_facts_available_at_this_stage">No facts available at this stage, please try again</string>
 </resources>
