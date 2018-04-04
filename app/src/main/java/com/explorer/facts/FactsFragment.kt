@@ -2,11 +2,13 @@ package com.explorer.facts
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.explorer.R
@@ -50,6 +52,9 @@ class FactsFragment : Fragment(), FactsContract.View {
         recyclerView.setHasFixedSize(true)
         val linearLayoutManager = LinearLayoutManager(context)
         recyclerView.layoutManager = linearLayoutManager
+
+        val divider = DividerItemDecoration(context, LinearLayout.VERTICAL)
+        recyclerView.addItemDecoration(divider)
 
         presenter.loadFacts(false)
 
