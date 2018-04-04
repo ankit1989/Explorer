@@ -2,9 +2,11 @@ package com.explorer.facts
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +14,7 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.explorer.R
+import com.explorer.facts.model.Fact
 import com.explorer.facts.model.FactResponse
 import com.explorer.facts.model.FactsAdapter
 import com.explorer.util.SnackbarUtils
@@ -65,10 +68,16 @@ class FactsFragment : Fragment(), FactsContract.View {
         this.presenter = presenter
     }
 
-    override fun showFacts(factResponse: FactResponse?) {
-        if (factResponse != null) {
-            adapter.setFacts(factResponse.facts)
+    override fun showFacts(facts: List<Fact>?) {
+        if (facts != null && !facts.isEmpty()) {
+            adapter.setFacts(facts)
+        } else {
+            showNoFactsView()
         }
+    }
+
+    override fun showTitle(title: String?) {
+        updateActionBarTitle(title)
     }
 
     override fun showNoFactsView() {
@@ -93,6 +102,20 @@ class FactsFragment : Fragment(), FactsContract.View {
         if (progressBar.isShown) {
             progressBar.visibility = View.GONE
         }
+    }
+
+    private fun updateActionBarTitle (title: String? = getString(R.string.app_name)) {
+        val actionBarTitle = if (!TextUtils.isEmpty(title)) title else getString(R.string.app_name)
+        /**
+         * TODO: Change this to use listener pattern using onAttach method to communicate with
+         * activity to update the title
+         *
+         * Also as per requirement spec doc should be using toolbar instead of Action bar
+         */
+        if (activity is AppCompatActivity) {
+            (activity as AppCompatActivity).supportActionBar?.title = actionBarTitle
+        }
+
     }
 
 }

@@ -1,5 +1,6 @@
 package com.explorer.facts
 
+import android.text.TextUtils
 import com.explorer.facts.model.Fact
 import com.explorer.facts.model.FactResponse
 import com.explorer.network.ApiUtils
@@ -63,10 +64,23 @@ class FactsPresenter (factsView: FactsContract.View) : FactsContract.Presenter {
     private fun processFacts(factsResponse: FactResponse?) {
         if (factsResponse != null) {
             mFactsResponse = factsResponse
-            mFactsView.showFacts(factsResponse)
-        } else {
-            mFactsView.showNoFactsView()
+            mFactsView.showTitle(factsResponse.title)
+            mFactsView.showFacts(removeEmptyFacts(factsResponse.facts))
         }
+    }
+
+    override fun removeEmptyFacts(facts: MutableList<Fact>?): MutableList<Fact>? {
+        if (facts != null && !facts.isEmpty()) {
+            val iterator = facts.iterator()
+            while(iterator.hasNext()) {
+                val fact = iterator.next()
+                if (TextUtils.isEmpty(fact.title) && TextUtils.isEmpty(fact.description)
+                        && TextUtils.isEmpty(fact.imageUrl)) {
+                    iterator.remove()
+                }
+            }
+        }
+        return facts
     }
 
 }
