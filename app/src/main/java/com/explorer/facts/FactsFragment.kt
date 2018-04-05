@@ -2,6 +2,7 @@ package com.explorer.facts
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
@@ -15,9 +16,9 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import com.explorer.R
 import com.explorer.facts.model.Fact
-import com.explorer.facts.model.FactResponse
 import com.explorer.facts.model.FactsAdapter
 import com.explorer.util.SnackbarUtils
+import com.explorer.widgets.ScrollChildSwipeRefreshLayout
 import kotlinx.android.synthetic.main.fragment_facts.*
 
 /**
@@ -28,8 +29,10 @@ class FactsFragment : Fragment(), FactsContract.View {
     private lateinit var recyclerView: RecyclerView
     private lateinit var progressBar: ProgressBar
     private lateinit var noContentTextView:TextView
+    private lateinit var swipeRefreshLayout: ScrollChildSwipeRefreshLayout
     private lateinit var presenter: FactsContract.Presenter
     private lateinit var adapter:FactsAdapter
+    private var isSwipeRefreshActive = false
 
     companion object {
         fun newInstance(): FactsFragment {
@@ -61,6 +64,20 @@ class FactsFragment : Fragment(), FactsContract.View {
 
         presenter.loadFacts(false)
 
+        // Set up progress indicator
+        swipeRefreshLayout = root.findViewById<ScrollChildSwipeRefreshLayout>(R.id.refresh_layout)
+        swipeRefreshLayout.setColorSchemeColors(
+                ContextCompat.getColor(context!!, R.color.colorPrimary),
+                ContextCompat.getColor(context!!, R.color.colorAccent),
+                ContextCompat.getColor(context!!, R.color.colorPrimaryDark)
+        )
+        // Set the scrolling view in the custom SwipeRefreshLayout.
+        swipeRefreshLayout.setScrollUpChild(recyclerView)
+        swipeRefreshLayout.setOnRefreshListener({
+            isSwipeRefreshActive = true
+            presenter.loadFacts(true)
+        })
+
         return root
     }
 
@@ -69,6 +86,10 @@ class FactsFragment : Fragment(), FactsContract.View {
     }
 
     override fun showFacts(facts: List<Fact>?) {
+        if (view == null) {
+            return;
+        }
+
         if (facts != null && !facts.isEmpty()) {
             adapter.setFacts(facts)
         } else {
@@ -93,12 +114,19 @@ class FactsFragment : Fragment(), FactsContract.View {
     }
 
     override fun showProgress() {
-        if (!progressBar.isShown) {
+        if (!isSwipeRefreshActive && !progressBar.isShown) {
             progressBar.visibility = View.VISIBLE
         }
     }
 
     override fun hideProgress() {
+        if (isSwipeRefreshActive) {
+            isSwipeRefreshActive = false
+            swipeRefreshLayout.post({
+                swipeRefreshLayout.isRefreshing = false
+            })
+        }
+
         if (progressBar.isShown) {
             progressBar.visibility = View.GONE
         }
