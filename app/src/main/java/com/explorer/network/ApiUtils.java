@@ -8,10 +8,10 @@ public class ApiUtils {
 
     private ApiUtils() {}
 
-    public static final String BASE_URL = "https://dl.dropboxusercontent.com";
-    public static final String CONTENT_TYPE_JSON = "Content-Type: application/json";
+    static final String BASE_URL = "https://dl.dropboxusercontent.com";
+    static final String CONTENT_TYPE_JSON = "Content-Type: application/json";
 
     public static APIService getAPIService() {
-        return RetrofitClient.getClient(BASE_URL).create(APIService.class);
+        return RetrofitClient.getClient().create(APIService.class);
     }
 }

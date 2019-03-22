@@ -73,10 +73,10 @@ class FactsFragment : Fragment(), FactsContract.View {
         )
         // Set the scrolling view in the custom SwipeRefreshLayout.
         swipeRefreshLayout.setScrollUpChild(recyclerView)
-        swipeRefreshLayout.setOnRefreshListener({
+        swipeRefreshLayout.setOnRefreshListener {
             isSwipeRefreshActive = true
             presenter.loadFacts(true)
-        })
+        }
 
         return root
     }
@@ -122,9 +122,9 @@ class FactsFragment : Fragment(), FactsContract.View {
     override fun hideProgress() {
         if (isSwipeRefreshActive) {
             isSwipeRefreshActive = false
-            swipeRefreshLayout.post({
+            swipeRefreshLayout.post {
                 swipeRefreshLayout.isRefreshing = false
-            })
+            }
         }
 
         if (progressBar.isShown) {

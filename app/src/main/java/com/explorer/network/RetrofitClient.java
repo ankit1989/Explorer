@@ -7,13 +7,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by ankitpatel on 3/4/18.
  */
 
-public class RetrofitClient {
+class RetrofitClient {
     private static Retrofit retrofit = null;
 
-    public static Retrofit getClient(String baseUrl) {
+    static Retrofit getClient() {
         if (retrofit == null) {
             retrofit = new Retrofit.Builder()
-                    .baseUrl(baseUrl)
+                    .baseUrl(ApiUtils.BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }

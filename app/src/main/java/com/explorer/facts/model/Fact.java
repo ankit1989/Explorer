@@ -18,17 +18,23 @@ public class Fact extends BaseObservable implements Parcelable {
     @SerializedName("imageHref")
     private String imageUrl;
 
-    @Override
-    public void writeToParcel(Parcel parcel, int flags) {
-        parcel.writeString(title);
-        parcel.writeString(description);
-        parcel.writeString(imageUrl);
+    public Fact (String title, String description, String imageUrl) {
+        this.title = title;
+        this.description = description;
+        this.imageUrl = imageUrl;
     }
 
     public Fact(Parcel in) {
         title = in.readString();
         description = in.readString();
         imageUrl = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeString(title);
+        parcel.writeString(description);
+        parcel.writeString(imageUrl);
     }
 
     @Override
